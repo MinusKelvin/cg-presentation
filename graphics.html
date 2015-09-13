@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>MinusKelvin</title>
+		<link rel="stylesheet" type="text/css" href="styles.css"/>
+	</head>
+	<body>
+		<div id="header">
+			<div id="header-center"><!-- Yay for getting-around-certain-aspects-of-distplay-inline-block hackery!
+			--><a id="home" href="index.html">
+					<h2>MinusKelvin</h2>
+				</a><!--
+			--><ul id="navbar-items"><!--
+				--><li>
+						<a class="navbar" href="about.html" style="border-bottom-color: blue">
+							<h3>About</h3>
+						</a>
+					</li><!--
+				--><li>
+						<a class="navbar" href="projects.html" style="border-bottom-color: green">
+							<h3>Projects</h3>
+						</a>
+					</li><!--
+				--><li>
+						<a class="navbar" href="contact.html" style="border-bottom-color: red">
+							<h3>Contact</h3>
+						</a>
+					</li><!--
+			--></ul><!--
+			--><div id="borderfill"></div><!--
+		--></div>
+		</div>
+		<div id="margin"></div>
+		<div class="slide shown" id="1">
+			<span class="center" style="top: 35%; font-size: 50px">How Computer Graphics Work</span>
+			<a id="startbutton" href="javascript:void(0);">Start</a>
+		</div>
+		<div class="slide hidden" id="2">
+			<span class="center">
+				A computer screen is a grid of pixels.
+				Inside each pixel are three LEDs that emit different colors of light.
+				There is a red one, a green one, and a blue one.
+				Together these produce all the colors you can see on a computer screen.
+			</span>
+		</div>
+		<div class="slide hidden" id="3">
+			<span class="center">
+				Here is a grid of pixels.
+				Shapes can be drawn by filling in all the pixels inside of the shape.
+				Here you can see a triangle rotating in the grid.
+				There's a few problems with this, though.
+				First of all, the triangle isn't rotated very smoothly.
+			</span>
+		</div>
+		<a id="left" class="slidenav" href="javascript:void(0);">&lt;</a>
+		<a id="right" class="slidenav" href="javascript:void(0);">&gt;</a>
+		<a id="togglebar" class="shown" href="javascript:void(0);"></a>
+		<script>
+			var slides = [];
+			var i = 0;
+			while (true) {
+				i += 1;
+				var e = document.getElementById(""+i);
+				if (e == null) {
+					break;
+				}
+				slides.push(e);
+			}
+			var current = 0;
+			var shown = true;
+			function hidebar() {
+				document.getElementById("header").className = "hidden";
+				document.getElementById("togglebar").className = "";
+				shown = false;
+			}
+			function showbar() {
+				document.getElementById("header").className = "";
+				document.getElementById("togglebar").className = "shown";
+				shown = true;
+			}
+			document.getElementById("startbutton").addEventListener("click", function(event) {
+				document.getElementById("right").click();
+			});
+			document.getElementById("left").addEventListener("click", function(event) {
+				if (current != 0) {
+					current -= 1;
+					slides[current].className = "slide shown";
+					slides[current+1].className = "slide hidden";
+					hidebar();
+				}
+			});
+			document.getElementById("right").addEventListener("click", function(event) {
+				if (current < slides.length-1) {
+					current += 1;
+					slides[current].className = "slide shown";
+					slides[current-1].className = "slide done";
+					hidebar();
+				}
+			});
+			document.getElementById("togglebar").addEventListener("click", function(event) {
+				if (shown) {
+					hidebar();
+				} else {
+					showbar();
+				}
+			});
+		</script>
+	</body>
+</html>

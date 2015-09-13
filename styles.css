@@ -1,0 +1,194 @@
+#startbutton {
+	background-color: blue;
+	color: white;
+	padding: 8px 32px;
+	transition: transform 0.3s;
+	border: solid white 2px;
+	border-radius: 8px;
+	font-size: 40px;
+	text-decoration: none;
+	display: inline-block;
+	position: absolute;
+	top: 60%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#startbutton:hover {
+	transform: translate(-50%, -50%) scale(1.15);
+}
+
+span.center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+div.slide.shown {
+	left: 0;
+}
+
+div.slide.hidden {
+	left: 100%;
+}
+
+div.slide.done {
+	left: -100%;
+}
+
+div.slide {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	transition: left 1s;
+}
+
+a.slidenav {
+	position: absolute;
+	text-decoration: none;
+}
+
+a#togglebar {
+	position: absolute;
+	top: 0;
+	left: 32px;
+	transition: top 0.5s;
+	text-decoration: none;
+}
+
+a#togglebar::before {
+	content: "V";
+}
+
+a#togglebar.shown {
+	top: 70px;
+}
+
+a#togglebar.shown::before {
+	content: "^";
+}
+
+a#left {
+	bottom: 0;
+	right: 65%;
+}
+
+a#right {
+	bottom: 0;
+	left: 65%;
+}
+
+html, body {
+	margin: 0;
+	font-family: "Segoe UI", Arial, sans-serif;
+	font-weight: normal;
+	background-color: #eee;
+	height: 100%;
+	overflow: hidden;
+}
+
+div#header {
+	background-color: #333;
+	box-shadow: 0 0 8px black;
+	position: fixed;
+	width: 100%;
+	top: 0;
+	height: 64px;
+	max-height: 64px;
+	min-height: 64px;
+	white-space: nowrap;
+	z-index: 1000000;
+}
+
+div#header a {
+	color: #eee;
+	text-decoration: none;
+	padding: 16px;
+	display: inline-block;
+	vertical-align: top;
+	height: 32px; /* 16px padding on top and bottom, 64-16-16 = 32 */
+}
+
+div#header a.navbar {
+	border-left: 1px solid gray;
+	border-right: 1px solid gray;
+	border-bottom: 4px solid gray;
+	padding-bottom: 12px;
+	background-color: #333;
+	transition: background-color 0.25s, color 0.25s;
+}
+
+div#header a.navbar:hover, div#header a.navbar:focus {
+	color: #ddd;
+	background-color: #222;
+	text-decoration: none;
+}
+
+div#header a#home {
+	color: #aaf;
+	text-decoration: none;
+	border-right: 1px solid gray;
+}
+
+div#header a#home:hover, div#header a#home:focus {
+	color: white;
+}
+
+div#header h3, div#header h2 {
+	margin: 0;
+}
+
+div#header a.navbar h3 {
+	position: relative;
+	bottom: -4px;
+}
+
+div#header ul li, div#header ul {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	list-style-type: none;
+	white-space: nowrap;
+	vertical-align: top;
+}
+
+div#borderfill {
+	width: 1px;
+	height: 100%;
+	background-color: gray;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+}
+
+div#header-center {
+	width: 60%;
+	margin: auto;
+	min-width: 400px;
+	height: 100%;
+}
+
+div#content {
+	margin: 64px auto auto auto;
+	padding: 0px 16px 16px 16px;
+	width: 55%;
+	min-width: 400px;
+	border: 2px solid #ddd;
+	border-top: none;
+	background-color: white;
+	overflow: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 200;
+}
+
+div#header {
+	transition: top 0.5s;
+}
+
+div#header.hidden {
+	top: -70px;
+}
