@@ -37,12 +37,10 @@
 			<a id="startbutton" href="javascript:void(0);">Start</a>
 		</div>
 		<div class="slide hidden" id="2">
-			<span class="center">
-				A computer screen is a grid of pixels.
-				Inside each pixel are three LEDs that emit different colors of light.
-				There is a red one, a green one, and a blue one.
-				Together these produce all the colors you can see on a computer screen.
-			</span>
+			<canvas id="pixel-grid" class="center">
+				Your browser does not support HTML5. Please use a more modern browser.
+			</canvas>
+			<script src="slide1.js"></script>
 		</div>
 		<div class="slide hidden" id="3">
 			<span class="center">
@@ -56,55 +54,6 @@
 		<a id="left" class="slidenav" href="javascript:void(0);">&lt;</a>
 		<a id="right" class="slidenav" href="javascript:void(0);">&gt;</a>
 		<a id="togglebar" class="shown" href="javascript:void(0);"></a>
-		<script>
-			var slides = [];
-			var i = 0;
-			while (true) {
-				i += 1;
-				var e = document.getElementById(""+i);
-				if (e == null) {
-					break;
-				}
-				slides.push(e);
-			}
-			var current = 0;
-			var shown = true;
-			function hidebar() {
-				document.getElementById("header").className = "hidden";
-				document.getElementById("togglebar").className = "";
-				shown = false;
-			}
-			function showbar() {
-				document.getElementById("header").className = "";
-				document.getElementById("togglebar").className = "shown";
-				shown = true;
-			}
-			document.getElementById("startbutton").addEventListener("click", function(event) {
-				document.getElementById("right").click();
-			});
-			document.getElementById("left").addEventListener("click", function(event) {
-				if (current != 0) {
-					current -= 1;
-					slides[current].className = "slide shown";
-					slides[current+1].className = "slide hidden";
-					hidebar();
-				}
-			});
-			document.getElementById("right").addEventListener("click", function(event) {
-				if (current < slides.length-1) {
-					current += 1;
-					slides[current].className = "slide shown";
-					slides[current-1].className = "slide done";
-					hidebar();
-				}
-			});
-			document.getElementById("togglebar").addEventListener("click", function(event) {
-				if (shown) {
-					hidebar();
-				} else {
-					showbar();
-				}
-			});
-		</script>
+		<script src="control.js"></script>
 	</body>
 </html>
