@@ -201,4 +201,4 @@ setTimeout(function(event) {
 		setInterval(render, 16);
 	}
 },0);
-setTimeout(function(){document.getElementById("right").click()},0);
+// setTimeout(function(){document.getElementById("right").click()},0);
