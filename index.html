@@ -40,6 +40,20 @@
 			<canvas id="pixel-grid" class="center">
 				Your browser does not support HTML5. Please use a more modern browser.
 			</canvas>
+			<script type="text/vertex-shader" id="s1-vs">
+				attribute vec2 pos;
+				
+				void main() {
+					gl_Position = vec4(pos, 0.0, 1.0);
+				}
+			</script>
+			<script type="text/fragment-shader" id="s1-fs">
+				precision mediump float;
+				
+				void main() {
+					gl_FragColor = vec4(1.0);
+				}
+			</script>
 			<script src="slide1.js"></script>
 		</div>
 		<div class="slide hidden" id="3">
