@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8"/>
-		<title>MinusKelvin</title>
+		<title>Computer Graphics Presentation - MinusKelvin</title>
 		<link rel="stylesheet" type="text/css" href="styles.css"/>
 	</head>
 	<body>
@@ -40,20 +40,6 @@
 			<canvas id="pixel-grid" class="center">
 				Your browser does not support HTML5. Please use a more modern browser.
 			</canvas>
-			<script type="text/vertex-shader" id="s1-vs">
-				attribute vec2 pos;
-				
-				void main() {
-					gl_Position = vec4(pos, 0.0, 1.0);
-				}
-			</script>
-			<script type="text/fragment-shader" id="s1-fs">
-				precision mediump float;
-				
-				void main() {
-					gl_FragColor = vec4(1.0);
-				}
-			</script>
 			<script src="slide1.js"></script>
 		</div>
 		<div class="slide hidden" id="3">
@@ -69,5 +55,14 @@
 		<a id="right" class="slidenav" href="javascript:void(0);">&gt;</a>
 		<a id="togglebar" class="shown" href="javascript:void(0);"></a>
 		<script src="control.js"></script>
+		<div style="display:none;">
+			<div id="webgl-unsupported" class="center" style="top:40%">
+				<div style="font-size: 6em;">:(</div>
+				<div style="margin-top: 32px;">
+					Your browser does not support WebGL.<br>
+					Please use a browser that supports WebGL, such as Firefox or Chrome.
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

@@ -1,4 +1,5 @@
 var pixels = document.getElementById("pixel-grid");
+var GL_SUPPORTED;
 
 size = Math.floor(Math.min(window.innerHeight, window.innerWidth) * 0.9);
 pixels.width = size;
@@ -6,21 +7,15 @@ pixels.height = size;
 
 setTimeout(function(event) {
 	var gl = pixels.getContext("webgl");
+	gl = null;
 	if (!gl) {
-		pixels.parentNode.addChild(document.createTextNode("Your browser does not support webgl"));
+		GL_SUPPORTED = false;
+		pixels.parentNode.appendChild(document.getElementById("webgl-unsupported").cloneNode(true));
 		pixels.remove();
 	} else {
-		var vsScript = document.getElementById("s1-vs");
-		var str = "";
-		var l = vsScript.firstChild;
-		while (l) {
-			if (l.nodeType == 3) {
-				str += l.textContent;
-			}
-			l = l.nextSibling;
-		}
+		GL_SUPPORTED = true;
 		var vs = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(vs, str);
+		gl.shaderSource(vs, "attribute vec2 pos;void main() {gl_Position = vec4(pos, 0.0, 1.0);}");
 		gl.compileShader(vs);
 
 		if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
@@ -28,17 +23,8 @@ setTimeout(function(event) {
 			return;
 		}
 
-		var fsScript = document.getElementById("s1-fs");
-		str = "";
-		l = fsScript.firstChild;
-		while (l) {
-			if (l.nodeType == 3) {
-				str += l.textContent;
-			}
-			l = l.nextSibling;
-		}
 		var fs = gl.createShader(gl.FRAGMENT_SHADER);
-		gl.shaderSource(fs, str);
+		gl.shaderSource(fs, "precision mediump float;void main() {gl_FragColor = vec4(1.0);}");
 		gl.compileShader(fs);
 
 		if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
