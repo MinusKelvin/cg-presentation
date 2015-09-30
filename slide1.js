@@ -4,7 +4,10 @@ size = Math.floor(Math.min(window.innerHeight, window.innerWidth) * 0.9);
 pixels.width = size;
 pixels.height = size;
 
-setTimeout(function(event) {
+var slide1obj = {};
+slide1obj.slideprogress = 0;
+
+slide1obj.init = (function(event) {
 	var gl = pixels.getContext("webgl");
 	if (!gl) {
 		gl = pixels.getContext("experimental-webgl");
@@ -148,8 +151,6 @@ setTimeout(function(event) {
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		var snap = false;
-
 		function render() {
 			triverts[0] = point1.x;
 			triverts[1] = point1.y;
@@ -175,7 +176,11 @@ setTimeout(function(event) {
 			gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
 			gl.enableVertexAttribArray(pos);
 
-			gl.drawArrays(gl.TRIANGLES, 0, 3);
+			gl.lineWidth(1);
+			if (slide1obj.slideprogress == 1)
+				gl.drawArrays(gl.LINES, 0, 2);
+			else
+				gl.drawArrays(gl.TRIANGLES, 0, 3);
 
 			// Init for normal screen
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -212,7 +217,10 @@ setTimeout(function(event) {
 			gl.lineWidth(size/100);
 			gl.uniform4f(colorloc, 0,0,1,0.75);
 
-			gl.drawArrays(gl.LINE_LOOP,0,3);
+			if (slide1obj.slideprogress < 2)
+				gl.drawArrays(gl.LINES, 0, 2);
+			else
+				gl.drawArrays(gl.LINE_LOOP,0,3);
 
 			// Triangle vertices
 			gl.bindBuffer(gl.ARRAY_BUFFER, circle);
@@ -251,20 +259,22 @@ setTimeout(function(event) {
 			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
 
-			// Point 1
-			gl.uniform3f(trans, point3.x, point3.y, outersize);
-			if (point3.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
+			// Point 3
+			if (slide1obj.slideprogress > 1) {
+				gl.uniform3f(trans, point3.x, point3.y, outersize);
+				if (point3.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
+				else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
 
-			gl.uniform3f(trans, point3.x, point3.y, middlesize);
-			gl.uniform4f(colorloc, 1,1,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+				gl.uniform3f(trans, point3.x, point3.y, middlesize);
+				gl.uniform4f(colorloc, 1,1,1,1);
+				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
 
-			gl.uniform3f(trans, point3.x, point3.y, innersize);
-			if (point3.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
+				gl.uniform3f(trans, point3.x, point3.y, innersize);
+				if (point3.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
+				else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
+			}
 		}
 
 		pixels.addEventListener("mousemove", function(e) {
@@ -280,17 +290,26 @@ setTimeout(function(event) {
 				point2.x = gridspace.x+point2.offx;
 				point2.y = gridspace.y+point2.offy;
 			}
-			if (point3.drag) {
+			if (point3.drag && slide1obj.slideprogress > 1) {
 				point3.x = gridspace.x+point3.offx;
 				point3.y = gridspace.y+point3.offy;
 			}
 
-			point1.x = Math.min(Math.max(point1.x,0),25);
-			point1.y = Math.min(Math.max(point1.y,0),25);
-			point2.x = Math.min(Math.max(point2.x,0),25);
-			point2.y = Math.min(Math.max(point2.y,0),25);
-			point3.x = Math.min(Math.max(point3.x,0),25);
-			point3.y = Math.min(Math.max(point3.y,0),25);
+			if (slide1obj.slideprogress < 2) {
+				point1.x = Math.min(Math.max(Math.floor(point1.x)+0.5,0.5),24.5);
+				point1.y = Math.min(Math.max(Math.floor(point1.y)+0.5,0.5),24.5);
+				point2.x = Math.min(Math.max(Math.floor(point2.x)+0.5,0.5),24.5);
+				point2.y = Math.min(Math.max(Math.floor(point2.y)+0.5,0.5),24.5);
+				point3.x = Math.min(Math.max(Math.floor(point3.x)+0.5,0.5),24.5);
+				point3.y = Math.min(Math.max(Math.floor(point3.y)+0.5,0.5),24.5);
+			} else {
+				point1.x = Math.min(Math.max(point1.x,0),25);
+				point1.y = Math.min(Math.max(point1.y,0),25);
+				point2.x = Math.min(Math.max(point2.x,0),25);
+				point2.y = Math.min(Math.max(point2.y,0),25);
+				point3.x = Math.min(Math.max(point3.x,0),25);
+				point3.y = Math.min(Math.max(point3.y,0),25);
+			}
 
 			point1.hover = false;
 			point2.hover = false;
@@ -303,15 +322,19 @@ setTimeout(function(event) {
 				point2.hover = true;
 				point2.offx = point2.x - gridspace.x;
 				point2.offy = point2.y - gridspace.y;
-			} else if ((gridspace.x-point3.x)*(gridspace.x-point3.x) + (gridspace.y-point3.y)*(gridspace.y-point3.y) < 0.25) {
+			} else if ((gridspace.x-point3.x)*(gridspace.x-point3.x) + (gridspace.y-point3.y)*(gridspace.y-point3.y) < 0.25 && slide1obj.slideprogress > 1) {
 				point3.hover = true;
 				point3.offx = point3.x - gridspace.x;
 				point3.offy = point3.y - gridspace.y;
 			}
+			point1.hover = point1.hover || point1.drag;
+			point2.hover = point2.hover || point2.drag;
+			point3.hover = point3.hover || point3.drag;
 
 			if (point1.hover || point2.hover || point3.hover) pixels.style.cursor = "grab";
 			else pixels.style.cursor = "default";
 			if (point1.drag || point2.drag || point3.drag) pixels.style.cursor = "grabbing";
+			render();
 		});
 
 		pixels.addEventListener("mousedown", function(e) {
@@ -319,6 +342,7 @@ setTimeout(function(event) {
 			point2.drag = point2.hover;
 			point3.drag = point3.hover;
 			if (point1.drag || point2.drag || point3.drag) pixels.style.cursor = "grabbing";
+			render();
 		});
 
 		window.addEventListener("mouseup", function(e) {
@@ -327,6 +351,7 @@ setTimeout(function(event) {
 			point3.drag = false;
 			if (point1.hover || point2.hover || point3.hover) pixels.style.cursor = "grab";
 			else pixels.style.cursor = "default";
+			render();
 		});
 
 		window.addEventListener("resize", function(e) {
@@ -336,7 +361,37 @@ setTimeout(function(event) {
 			render();
 		});
 
-		setInterval(render, 16);
+		render();
+
+		slide1obj.next = function() {
+			if (slide1obj.slideprogress == 5) {
+				return true;
+			} else {
+				slide1obj.slideprogress++;
+				switch (slide1obj.slideprogress) {
+					case 1:
+						document.getElementById("s1t2").className = "leaf-right shown";
+						break;
+				}
+				render();
+				return false;
+			}
+		}
+		slide1obj.prev = function() {
+			if (slide1obj.slideprogress == 0) {
+				return true;
+			} else {
+				slide1obj.slideprogress--;
+				switch (slide1obj.slideprogress) {
+					case 0:
+						document.getElementById("s1t2").className = "leaf-right hidden";
+						break;
+				}
+				render();
+				return false;
+			}
+		}
 	}
-},0);
+});
 // setTimeout(function(){document.getElementById("right").click()},0);
+slideObjects.push(slide1obj);

@@ -24,20 +24,20 @@ document.getElementById("startbutton").addEventListener("click", function(event)
 	document.getElementById("right").click();
 });
 document.getElementById("left").addEventListener("click", function(event) {
-	if (current != 0) {
+	if (slideObjects[current].prev() && current != 0) {
 		current -= 1;
 		slides[current].className = "slide shown";
 		slides[current+1].className = "slide hidden";
-		hidebar();
 	}
+	hidebar();
 });
 document.getElementById("right").addEventListener("click", function(event) {
-	if (current < slides.length-1) {
+	if (slideObjects[current].next() && current < slides.length-1) {
 		current += 1;
 		slides[current].className = "slide shown";
 		slides[current-1].className = "slide done";
-		hidebar();
 	}
+	hidebar();
 });
 document.getElementById("togglebar").addEventListener("click", function(event) {
 	if (shown) {
@@ -46,3 +46,8 @@ document.getElementById("togglebar").addEventListener("click", function(event) {
 		showbar();
 	}
 });
+
+window.addEventListener("load", function() {
+	for (var i = 0; i < slides.length; i++)
+		slideObjects[i].init();
+})

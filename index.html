@@ -32,24 +32,26 @@
 		--></div>
 		</div>
 		<div id="margin"></div>
+		<script src="init.js"></script>
 		<div class="slide shown" id="1">
-			<span class="center" style="top: 35%; font-size: 50px">How Computer Graphics Work</span>
+			<div class="center" style="top: 35%; font-size: 50px">How Computer Graphics Work</div>
 			<a id="startbutton" href="javascript:void(0);">Start</a>
 		</div>
 		<div class="slide hidden" id="2">
-			<canvas id="pixel-grid" class="center">
-				Your browser does not support HTML5. Please use a more modern browser.
-			</canvas>
+			<div id="s1center" class="center">
+				<div class="leaf-left shown" id="s1t1">
+					Your screen is a grid of pixels, and so all computer graphics must be put of a grid of pixels somehow.
+					<br><br>The screen can be viewed as a coordinate system.
+				</div>
+				<div class="leaf-right hidden" id="s1t2">
+					Using whole-number coordinates, points fall exactly on pixels' centers and everything is really easy.
+					<br><br>Drawing lines is simple, find the line's slope and step along it until you reach the other end.
+				</div>
+				<canvas id="pixel-grid">
+					Your browser does not support HTML5. Please use a more modern browser, such as Firefox or Chrome.
+				</canvas>
+			</div>
 			<script src="slide1.js"></script>
-		</div>
-		<div class="slide hidden" id="3">
-			<span class="center">
-				Here is a grid of pixels.
-				Shapes can be drawn by filling in all the pixels inside of the shape.
-				Here you can see a triangle rotating in the grid.
-				There's a few problems with this, though.
-				First of all, the triangle isn't rotated very smoothly.
-			</span>
 		</div>
 		<a id="left" class="slidenav" href="javascript:void(0);">&lt;</a>
 		<a id="right" class="slidenav" href="javascript:void(0);">&gt;</a>
