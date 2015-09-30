@@ -223,7 +223,7 @@ setTimeout(function(event) {
 
 			// Point 1
 			gl.uniform3f(trans, point1.x, point1.y, outersize);
-			if (point1.hover) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			if (point1.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
 			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
 
@@ -232,13 +232,13 @@ setTimeout(function(event) {
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
 
 			gl.uniform3f(trans, point1.x, point1.y, innersize);
-			if (point1.drag) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			if (point1.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
 			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
 
 			// Point 2
 			gl.uniform3f(trans, point2.x, point2.y, outersize);
-			if (point2.hover) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			if (point2.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
 			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
 
@@ -247,13 +247,13 @@ setTimeout(function(event) {
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
 
 			gl.uniform3f(trans, point2.x, point2.y, innersize);
-			if (point2.drag) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			if (point2.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
 			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
 
 			// Point 1
 			gl.uniform3f(trans, point3.x, point3.y, outersize);
-			if (point3.hover) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			if (point3.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
 			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
 
@@ -262,7 +262,7 @@ setTimeout(function(event) {
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
 
 			gl.uniform3f(trans, point3.x, point3.y, innersize);
-			if (point3.drag) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			if (point3.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
 			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
 		}
@@ -274,15 +274,15 @@ setTimeout(function(event) {
 			};
 			if (point1.drag) {
 				point1.x = gridspace.x+point1.offx;
-				point1.y = gridspace.y+point1.offx;
+				point1.y = gridspace.y+point1.offy;
 			}
 			if (point2.drag) {
 				point2.x = gridspace.x+point2.offx;
-				point2.y = gridspace.y+point2.offx;
+				point2.y = gridspace.y+point2.offy;
 			}
 			if (point3.drag) {
 				point3.x = gridspace.x+point3.offx;
-				point3.y = gridspace.y+point3.offx;
+				point3.y = gridspace.y+point3.offy;
 			}
 
 			point1.x = Math.min(Math.max(point1.x,0),25);
@@ -298,15 +298,15 @@ setTimeout(function(event) {
 			if ((gridspace.x-point1.x)*(gridspace.x-point1.x) + (gridspace.y-point1.y)*(gridspace.y-point1.y) < 0.25) {
 				point1.hover = true;
 				point1.offx = point1.x - gridspace.x;
-				point1.offy = gridspace.y-point1.y;
+				point1.offy = point1.y - gridspace.y;
 			} else if ((gridspace.x-point2.x)*(gridspace.x-point2.x) + (gridspace.y-point2.y)*(gridspace.y-point2.y) < 0.25) {
 				point2.hover = true;
 				point2.offx = point2.x - gridspace.x;
-				point2.offy = gridspace.y-point2.y;
+				point2.offy = point2.y - gridspace.y;
 			} else if ((gridspace.x-point3.x)*(gridspace.x-point3.x) + (gridspace.y-point3.y)*(gridspace.y-point3.y) < 0.25) {
 				point3.hover = true;
 				point3.offx = point3.x - gridspace.x;
-				point3.offy = gridspace.y-point3.y;
+				point3.offy = point3.y - gridspace.y;
 			}
 
 			if (point1.hover || point2.hover || point3.hover) pixels.style.cursor = "grab";
@@ -339,4 +339,4 @@ setTimeout(function(event) {
 		setInterval(render, 16);
 	}
 },0);
-setTimeout(function(){document.getElementById("right").click()},0);
+// setTimeout(function(){document.getElementById("right").click()},0);
