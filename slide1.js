@@ -13,6 +13,7 @@ setTimeout(function(event) {
 		pixels.parentNode.appendChild(document.getElementById("webgl-unsupported").cloneNode(true));
 		pixels.remove();
 	} else {
+		// Texture shader
 		var vs = gl.createShader(gl.VERTEX_SHADER);
 		gl.shaderSource(vs, "attribute vec2 pos;varying vec2 tex;void main() {gl_Position = vec4(pos*2.0-1.0, 0.0, 1.0);tex=pos;}");
 		gl.compileShader(vs);
@@ -43,8 +44,9 @@ setTimeout(function(event) {
 
 		gl.useProgram(texProgram);
 
+		// Color shader
 		var vs = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(vs, "attribute vec2 pos;uniform mat4 proj;void main() {gl_Position = proj*vec4(pos, 0.0, 1.0);}");
+		gl.shaderSource(vs, "attribute vec2 pos;uniform mat4 proj;uniform vec3 trans;void main() {gl_Position = proj*vec4(pos*trans.z+trans.xy, 0.0, 1.0);}");
 		gl.compileShader(vs);
 
 		if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
@@ -88,15 +90,14 @@ setTimeout(function(event) {
 		}
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ary), gl.STATIC_DRAW);
 
-		var point1 = {x:4.5,y:19.5};
-		var point2 = {x:16.5,y:6.5};
-		var point3 = {x:20.5,y:16.5};
+		var point1 = {x:4.5,y:19.5,hover:false,drag:false,offx:0,offy:0};
+		var point2 = {x:16.5,y:6.5,hover:false,drag:false,offx:0,offy:0};
+		var point3 = {x:20.5,y:16.5,hover:false,drag:false,offx:0,offy:0};
 
 		var tri = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, tri);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-			point1.x, point1.y, point2.x, point2.y, point3.x, point3.y,
-		]), gl.STATIC_DRAW);
+		var triverts = new Float32Array([point1.x, point1.y, point2.x, point2.y, point3.x, point3.y]);
+		gl.bufferData(gl.ARRAY_BUFFER, triverts, gl.STATIC_DRAW);
 
 		var quad = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, quad);
@@ -106,6 +107,16 @@ setTimeout(function(event) {
 			0,1,
 			1,1
 		]), gl.STATIC_DRAW);
+
+		var circle = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, circle);
+		var circlepoints = [];
+		for (var i = 0; i < 15; i++) {
+			var a = Math.PI * i/7.5;
+			circlepoints.push(Math.cos(a));
+			circlepoints.push(Math.sin(a));
+		}
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(circlepoints), gl.STATIC_DRAW);
 
 		var matrix = new Float32Array([
 			2/25,  0,     0,     0,
@@ -129,6 +140,7 @@ setTimeout(function(event) {
 		gl.uniformMatrix4fv(gl.getUniformLocation(colorProgram, "proj"), false, matrix);
 
 		var colorloc = gl.getUniformLocation(colorProgram, "color");
+		var trans = gl.getUniformLocation(colorProgram, "trans");
 
 		var pos = gl.getAttribLocation(colorProgram, "pos");
 		var pos2 = gl.getAttribLocation(texProgram, "pos");
@@ -136,7 +148,18 @@ setTimeout(function(event) {
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+		var snap = false;
+
 		function render() {
+			triverts[0] = point1.x;
+			triverts[1] = point1.y;
+			triverts[2] = point2.x;
+			triverts[3] = point2.y;
+			triverts[4] = point3.x;
+			triverts[5] = point3.y;
+			gl.bindBuffer(gl.ARRAY_BUFFER, tri);
+			gl.bufferSubData(gl.ARRAY_BUFFER, 0, triverts);
+
 			// Triangle to offscreen FBO
 			gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
 			gl.viewport(0,0,25,25);
@@ -146,6 +169,7 @@ setTimeout(function(event) {
 
 			gl.useProgram(colorProgram);
 			gl.uniform4f(colorloc, 1,0,0,1);
+			gl.uniform3f(trans, 0, 0, 1);
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, tri);
 			gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
@@ -189,10 +213,124 @@ setTimeout(function(event) {
 			gl.uniform4f(colorloc, 0,0,1,0.75);
 
 			gl.drawArrays(gl.LINE_LOOP,0,3);
+
+			// Triangle vertices
+			gl.bindBuffer(gl.ARRAY_BUFFER, circle);
+			gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+			var innersize = 0.22;
+			var middlesize = 0.3;
+			var outersize = 0.37;
+
+			// Point 1
+			gl.uniform3f(trans, point1.x, point1.y, outersize);
+			if (point1.hover) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
+
+			gl.uniform3f(trans, point1.x, point1.y, middlesize);
+			gl.uniform4f(colorloc, 1,1,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+
+			gl.uniform3f(trans, point1.x, point1.y, innersize);
+			if (point1.drag) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
+
+			// Point 2
+			gl.uniform3f(trans, point2.x, point2.y, outersize);
+			if (point2.hover) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
+
+			gl.uniform3f(trans, point2.x, point2.y, middlesize);
+			gl.uniform4f(colorloc, 1,1,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+
+			gl.uniform3f(trans, point2.x, point2.y, innersize);
+			if (point2.drag) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
+
+			// Point 1
+			gl.uniform3f(trans, point3.x, point3.y, outersize);
+			if (point3.hover) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
+
+			gl.uniform3f(trans, point3.x, point3.y, middlesize);
+			gl.uniform4f(colorloc, 1,1,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+
+			gl.uniform3f(trans, point3.x, point3.y, innersize);
+			if (point3.drag) gl.uniform4f(colorloc, 0.25,1,0.25,1);
+			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
 		}
 
+		pixels.addEventListener("mousemove", function(e) {
+			var gridspace = {
+				x: e.layerX/(size/25),
+				y: (pixels.height-e.layerY)/(size/25)
+			};
+			if (point1.drag) {
+				point1.x = gridspace.x+point1.offx;
+				point1.y = gridspace.y+point1.offx;
+			}
+			if (point2.drag) {
+				point2.x = gridspace.x+point2.offx;
+				point2.y = gridspace.y+point2.offx;
+			}
+			if (point3.drag) {
+				point3.x = gridspace.x+point3.offx;
+				point3.y = gridspace.y+point3.offx;
+			}
+
+			point1.x = Math.min(Math.max(point1.x,0),25);
+			point1.y = Math.min(Math.max(point1.y,0),25);
+			point2.x = Math.min(Math.max(point2.x,0),25);
+			point2.y = Math.min(Math.max(point2.y,0),25);
+			point3.x = Math.min(Math.max(point3.x,0),25);
+			point3.y = Math.min(Math.max(point3.y,0),25);
+
+			point1.hover = false;
+			point2.hover = false;
+			point3.hover = false;
+			if ((gridspace.x-point1.x)*(gridspace.x-point1.x) + (gridspace.y-point1.y)*(gridspace.y-point1.y) < 0.25) {
+				point1.hover = true;
+				point1.offx = point1.x - gridspace.x;
+				point1.offy = gridspace.y-point1.y;
+			} else if ((gridspace.x-point2.x)*(gridspace.x-point2.x) + (gridspace.y-point2.y)*(gridspace.y-point2.y) < 0.25) {
+				point2.hover = true;
+				point2.offx = point2.x - gridspace.x;
+				point2.offy = gridspace.y-point2.y;
+			} else if ((gridspace.x-point3.x)*(gridspace.x-point3.x) + (gridspace.y-point3.y)*(gridspace.y-point3.y) < 0.25) {
+				point3.hover = true;
+				point3.offx = point3.x - gridspace.x;
+				point3.offy = gridspace.y-point3.y;
+			}
+
+			if (point1.hover || point2.hover || point3.hover) pixels.style.cursor = "grab";
+			else pixels.style.cursor = "default";
+			if (point1.drag || point2.drag || point3.drag) pixels.style.cursor = "grabbing";
+		});
+
+		pixels.addEventListener("mousedown", function(e) {
+			point1.drag = point1.hover;
+			point2.drag = point2.hover;
+			point3.drag = point3.hover;
+			if (point1.drag || point2.drag || point3.drag) pixels.style.cursor = "grabbing";
+		});
+
+		window.addEventListener("mouseup", function(e) {
+			point1.drag = false;
+			point2.drag = false;
+			point3.drag = false;
+			if (point1.hover || point2.hover || point3.hover) pixels.style.cursor = "grab";
+			else pixels.style.cursor = "default";
+		});
+
 		window.addEventListener("resize", function(e) {
-			size = Math.floor(Math.min(window.innerHeight, window.innerWidth) * 0.9);
+			size = Math.floor(window.innerHeight * 0.9);
 			pixels.width = size;
 			pixels.height = size;
 			render();
@@ -201,4 +339,4 @@ setTimeout(function(event) {
 		setInterval(render, 16);
 	}
 },0);
-// setTimeout(function(){document.getElementById("right").click()},0);
+setTimeout(function(){document.getElementById("right").click()},0);
