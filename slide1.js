@@ -3,6 +3,7 @@ slide1obj.slideprogress = 0;
 
 slide1obj.init = (function(event) {
 	var pixels = document.getElementById("pixel-grid");
+	var coords = document.getElementById("coordinates");
 
 	size = Math.floor(Math.min(window.innerHeight, window.innerWidth) * 0.9);
 	pixels.width = size;
@@ -381,6 +382,14 @@ slide1obj.init = (function(event) {
 				point3.y = Math.min(Math.max(point3.y,0),25);
 			}
 
+			if (slide1obj.slideprogress < 4) {
+				coords.textContent = "(x: " + Math.floor(gridspace.x) + ", y: " + Math.floor(gridspace.y) + ")";
+			} else {
+				coords.textContent = "(x: " + Number(gridspace.x).toFixed(2) + ", y: " + Number(gridspace.y).toFixed(2) + ")";
+			}
+			coords.style.top = e.layerY + "px";
+			coords.style.left = e.layerX + "px";
+
 			point1.hover = false;
 			point2.hover = false;
 			point3.hover = false;
@@ -414,6 +423,8 @@ slide1obj.init = (function(event) {
 			if (point1.drag || point2.drag || point3.drag) pixels.style.cursor = "grabbing";
 			render();
 		});
+
+		pixels.addEventListener("mouseleave", function(){coords.textContent="";});
 
 		window.addEventListener("mouseup", function(e) {
 			point1.drag = false;
@@ -467,12 +478,6 @@ slide1obj.init = (function(event) {
 						document.getElementById("s1t5").className = "leaf-left hidden";
 						document.getElementById("s1t6").className = "leaf-right shown";
 						clearInterval(spinid);
-						point1.x = Math.min(Math.max(Math.floor(point1.x)+0.5,0.5),24.5);
-						point1.y = Math.min(Math.max(Math.floor(point1.y)+0.5,0.5),24.5);
-						point2.x = Math.min(Math.max(Math.floor(point2.x)+0.5,0.5),24.5);
-						point2.y = Math.min(Math.max(Math.floor(point2.y)+0.5,0.5),24.5);
-						point3.x = Math.min(Math.max(Math.floor(point3.x)+0.5,0.5),24.5);
-						point3.y = Math.min(Math.max(Math.floor(point3.y)+0.5,0.5),24.5);
 						break;
 				}
 				render();
