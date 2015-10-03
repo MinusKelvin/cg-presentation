@@ -34,24 +34,47 @@
 		<div id="margin"></div>
 		<script src="init.js"></script>
 		<div class="slide shown" id="1">
-			<div class="center" style="top: 35%; font-size: 50px">How Computer Graphics Work</div>
+			<div class="center" style="top: 35%; font-size: 50px; text-align: center">How Computer Graphics Work<br><span style="font-size: 0.6em;">An Interactive Presentation</span></div>
 			<a id="startbutton" href="javascript:void(0);">Start</a>
 		</div>
 		<div class="slide hidden" id="2">
 			<div id="s1center" class="center">
+				<div id="coordinates" style="display:none;"></div>
 				<div class="leaf-left shown" id="s1t1">
 					Your screen is a grid of pixels, and so all computer graphics must be put of a grid of pixels somehow.
-					<br><br>The screen can be viewed as a coordinate system.
+					<br><br>The screen is basically a coordinate system, and so locations are just a pair of coordinates.
 				</div>
 				<div class="leaf-right hidden" id="s1t2">
 					Using whole-number coordinates, points fall exactly on pixels' centers and everything is really easy.
-					<br><br>Drawing lines is simple, find the line's slope and step along it until you reach the other end.
+					<br><br>Drawing lines is simple, you just start at the beginning of the line and step along it until you reach the end of the line.
+				</div>
+				<div class="leaf-left hidden" id="s1t3">
+					Drawing filled shapes, such as triangles, is a little bit harder, but is still relatively simple to do quickly and efficently.
+				</div>
+				<div class="leaf-right hidden" id="s1t4">
+					We can rotate these around the center of the screen with a little bit of math and...<br>Uh oh! That rotation is really choppy and not very smooth. Rather ugly.
+					<br><br>The problem here is that we're losing information about the exact location of the triangle's corners.
+				</div>
+				<div class="leaf-left hidden" id="s1t5">
+					Ah! Much better. By changing our coordinate system from using whole numbers to using decimals, we can target parts of pixels instead of just the centers of them.
+					<br><br>This makes drawing stuff more complicated, but looks so much nicer.
+				</div>
+				<div class="leaf-right hidden" id="s1t6">
+					One color is kinda boring. Here's 3 colors!
+					<br><br>We colored one point of the triangle <span style="color:red;">red</span>, another <span style="color:green;">green</span>,
+					and the last <span style="color:blue;">blue</span>. The colors are smoothly shifted from one to another inside the triangle.
 				</div>
 				<canvas id="pixel-grid">
 					Your browser does not support HTML5. Please use a more modern browser, such as Firefox or Chrome.
 				</canvas>
 			</div>
 			<script src="slide1.js"></script>
+		</div>
+		<div class="slide hidden" id="3">
+			<div class="center">
+				That's all, folks!
+			</div>
+			<script src="slide2.js"></script>
 		</div>
 		<a id="left" class="slidenav" href="javascript:void(0);">&lt;</a>
 		<a id="right" class="slidenav" href="javascript:void(0);">&gt;</a>

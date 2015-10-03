@@ -1,13 +1,13 @@
-var pixels = document.getElementById("pixel-grid");
-
-size = Math.floor(Math.min(window.innerHeight, window.innerWidth) * 0.9);
-pixels.width = size;
-pixels.height = size;
-
 var slide1obj = {};
 slide1obj.slideprogress = 0;
 
 slide1obj.init = (function(event) {
+	var pixels = document.getElementById("pixel-grid");
+
+	size = Math.floor(Math.min(window.innerHeight, window.innerWidth) * 0.9);
+	pixels.width = size;
+	pixels.height = size;
+
 	var gl = pixels.getContext("webgl");
 	if (!gl) {
 		gl = pixels.getContext("experimental-webgl");
@@ -49,7 +49,7 @@ slide1obj.init = (function(event) {
 
 		// Color shader
 		var vs = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(vs, "attribute vec2 pos;uniform mat4 proj;uniform vec3 trans;void main() {gl_Position = proj*vec4(pos*trans.z+trans.xy, 0.0, 1.0);}");
+		gl.shaderSource(vs, "attribute vec2 pos;uniform mat4 proj;uniform vec3 trans;attribute vec4 color;varying vec4 col;void main() {gl_Position = proj*vec4(pos*trans.z+trans.xy, 0.0, 1.0);col=color;}");
 		gl.compileShader(vs);
 
 		if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
@@ -58,7 +58,7 @@ slide1obj.init = (function(event) {
 		}
 
 		var fs = gl.createShader(gl.FRAGMENT_SHADER);
-		gl.shaderSource(fs, "precision mediump float;uniform vec4 color;void main() {gl_FragColor = color;}");
+		gl.shaderSource(fs, "precision mediump float;varying vec4 col;void main() {gl_FragColor = col;}");
 		gl.compileShader(fs);
 
 		if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
@@ -93,7 +93,7 @@ slide1obj.init = (function(event) {
 		}
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ary), gl.STATIC_DRAW);
 
-		var point1 = {x:4.5,y:19.5,hover:false,drag:false,offx:0,offy:0};
+		point1 = {x:4.5,y:19.5,hover:false,drag:false,offx:0,offy:0};
 		var point2 = {x:16.5,y:6.5,hover:false,drag:false,offx:0,offy:0};
 		var point3 = {x:20.5,y:16.5,hover:false,drag:false,offx:0,offy:0};
 
@@ -121,6 +121,10 @@ slide1obj.init = (function(event) {
 		}
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(circlepoints), gl.STATIC_DRAW);
 
+		var colors = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, colors);
+		gl.bufferData(gl.ARRAY_BUFFER, new Int8Array([255,0,0,255,0,255,0,255,0,0,255,255]), gl.STATIC_DRAW);
+
 		var matrix = new Float32Array([
 			2/25,  0,     0,     0,
 			0,     2/25,  0,     0,
@@ -142,7 +146,7 @@ slide1obj.init = (function(event) {
 
 		gl.uniformMatrix4fv(gl.getUniformLocation(colorProgram, "proj"), false, matrix);
 
-		var colorloc = gl.getUniformLocation(colorProgram, "color");
+		var colorloc = gl.getAttribLocation(colorProgram, "color");
 		var trans = gl.getUniformLocation(colorProgram, "trans");
 
 		var pos = gl.getAttribLocation(colorProgram, "pos");
@@ -169,18 +173,26 @@ slide1obj.init = (function(event) {
 			gl.clear(gl.COLOR_BUFFER_BIT);
 
 			gl.useProgram(colorProgram);
-			gl.uniform4f(colorloc, 1,0,0,1);
+			gl.vertexAttrib4f(colorloc, 1,0,0,1);
 			gl.uniform3f(trans, 0, 0, 1);
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, tri);
 			gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
 			gl.enableVertexAttribArray(pos);
 
+			gl.bindBuffer(gl.ARRAY_BUFFER, colors);
+			gl.vertexAttribPointer(colorloc, 4, gl.UNSIGNED_BYTE, true, 0, 0);
+			if (slide1obj.slideprogress == 5)
+				gl.enableVertexAttribArray(colorloc);
+
 			gl.lineWidth(1);
 			if (slide1obj.slideprogress == 1)
 				gl.drawArrays(gl.LINES, 0, 2);
-			else
+			else if (slide1obj.slideprogress > 1)
 				gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+			if (slide1obj.slideprogress == 5)
+				gl.disableVertexAttribArray(colorloc);
 
 			// Init for normal screen
 			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -199,7 +211,7 @@ slide1obj.init = (function(event) {
 
 			// Gridlines
 			gl.useProgram(colorProgram);
-			gl.uniform4f(colorloc, 0,0,0,1);
+			gl.vertexAttrib4f(colorloc, 0,0,0,1);
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, grid);
 			gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
@@ -215,11 +227,11 @@ slide1obj.init = (function(event) {
 			gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
 
 			gl.lineWidth(size/100);
-			gl.uniform4f(colorloc, 0,0,1,0.75);
+			gl.vertexAttrib4f(colorloc, 0,0,1,0.75);
 
-			if (slide1obj.slideprogress < 2)
+			if (slide1obj.slideprogress == 1)
 				gl.drawArrays(gl.LINES, 0, 2);
-			else
+			else if (slide1obj.slideprogress > 1)
 				gl.drawArrays(gl.LINE_LOOP,0,3);
 
 			// Triangle vertices
@@ -229,52 +241,110 @@ slide1obj.init = (function(event) {
 			var middlesize = 0.3;
 			var outersize = 0.37;
 
-			// Point 1
-			gl.uniform3f(trans, point1.x, point1.y, outersize);
-			if (point1.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
+			if (slide1obj.slideprogress > 0) {
+				// Point 1
+				if (slide1obj.slideprogress != 3 && slide1obj.slideprogress != 4) {
+					gl.uniform3f(trans, point1.x, point1.y, outersize);
+					if (point1.hover) gl.vertexAttrib4f(colorloc, 0.25,0.85,0.25,1);
+					else gl.vertexAttrib4f(colorloc, 0.25,0.25,1,1);
+					gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
 
-			gl.uniform3f(trans, point1.x, point1.y, middlesize);
-			gl.uniform4f(colorloc, 1,1,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+					gl.uniform3f(trans, point1.x, point1.y, middlesize);
+					gl.vertexAttrib4f(colorloc, 1,1,1,1);
+					gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+				}
 
-			gl.uniform3f(trans, point1.x, point1.y, innersize);
-			if (point1.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
+				gl.uniform3f(trans, point1.x, point1.y, innersize);
+				if (point1.drag) gl.vertexAttrib4f(colorloc, 0.25,0.85,0.25,1);
+				else gl.vertexAttrib4f(colorloc, 0.25,0.25,1,1);
+				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
 
-			// Point 2
-			gl.uniform3f(trans, point2.x, point2.y, outersize);
-			if (point2.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
+				// Point 2
+				if (slide1obj.slideprogress != 3 && slide1obj.slideprogress != 4) {
+					gl.uniform3f(trans, point2.x, point2.y, outersize);
+					if (point2.hover) gl.vertexAttrib4f(colorloc, 0.25,0.85,0.25,1);
+					else gl.vertexAttrib4f(colorloc, 0.25,0.25,1,1);
+					gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
 
-			gl.uniform3f(trans, point2.x, point2.y, middlesize);
-			gl.uniform4f(colorloc, 1,1,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+					gl.uniform3f(trans, point2.x, point2.y, middlesize);
+					gl.vertexAttrib4f(colorloc, 1,1,1,1);
+					gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+				}
 
-			gl.uniform3f(trans, point2.x, point2.y, innersize);
-			if (point2.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-			else gl.uniform4f(colorloc, 0.25,0.25,1,1);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
+				gl.uniform3f(trans, point2.x, point2.y, innersize);
+				if (point2.drag) gl.vertexAttrib4f(colorloc, 0.25,0.85,0.25,1);
+				else gl.vertexAttrib4f(colorloc, 0.25,0.25,1,1);
+				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
+			}
 
 			// Point 3
 			if (slide1obj.slideprogress > 1) {
-				gl.uniform3f(trans, point3.x, point3.y, outersize);
-				if (point3.hover) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-				else gl.uniform4f(colorloc, 0.25,0.25,1,1);
-				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
+				if (slide1obj.slideprogress != 3 && slide1obj.slideprogress != 4) {
+					gl.uniform3f(trans, point3.x, point3.y, outersize);
+					if (point3.hover) gl.vertexAttrib4f(colorloc, 0.25,0.85,0.25,1);
+					else gl.vertexAttrib4f(colorloc, 0.25,0.25,1,1);
+					gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Outer circle
 
-				gl.uniform3f(trans, point3.x, point3.y, middlesize);
-				gl.uniform4f(colorloc, 1,1,1,1);
-				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+					gl.uniform3f(trans, point3.x, point3.y, middlesize);
+					gl.vertexAttrib4f(colorloc, 1,1,1,1);
+					gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Middle circle
+				}
 
 				gl.uniform3f(trans, point3.x, point3.y, innersize);
-				if (point3.drag) gl.uniform4f(colorloc, 0.25,0.85,0.25,1);
-				else gl.uniform4f(colorloc, 0.25,0.25,1,1);
+				if (point3.drag) gl.vertexAttrib4f(colorloc, 0.25,0.85,0.25,1);
+				else gl.vertexAttrib4f(colorloc, 0.25,0.25,1,1);
 				gl.drawArrays(gl.TRIANGLE_FAN, 0,15); // Inner circle
 			}
+		}
+
+		var point1Spin = {};
+		var point2Spin = {};
+		var point3Spin = {};
+		var cos1deg = Math.cos(1/360*Math.PI);
+		var sin1deg = Math.sin(1/360*Math.PI);
+		function spin() {
+			point1Spin.x -= 12.5;
+			point1Spin.y -= 12.5;
+			point2Spin.x -= 12.5;
+			point2Spin.y -= 12.5;
+			point3Spin.x -= 12.5;
+			point3Spin.y -= 12.5;
+
+			var tmp = point1Spin.x;
+			point1Spin.x = tmp * cos1deg + point1Spin.y * sin1deg;
+			point1Spin.y = tmp * -sin1deg + point1Spin.y * cos1deg;
+
+			tmp = point2Spin.x;
+			point2Spin.x = tmp * cos1deg + point2Spin.y * sin1deg;
+			point2Spin.y = tmp * -sin1deg + point2Spin.y * cos1deg;
+
+			tmp = point3Spin.x;
+			point3Spin.x = tmp * cos1deg + point3Spin.y * sin1deg;
+			point3Spin.y = tmp * -sin1deg + point3Spin.y * cos1deg;
+
+			point1Spin.x += 12.5;
+			point1Spin.y += 12.5;
+			point2Spin.x += 12.5;
+			point2Spin.y += 12.5;
+			point3Spin.x += 12.5;
+			point3Spin.y += 12.5;
+
+			point1.x = point1Spin.x;
+			point1.y = point1Spin.y;
+			point2.x = point2Spin.x;
+			point2.y = point2Spin.y;
+			point3.x = point3Spin.x;
+			point3.y = point3Spin.y;
+
+			if (slide1obj.slideprogress == 3) {
+				point1.x = Math.floor(point1.x)+0.5;
+				point1.y = Math.floor(point1.y)+0.5;
+				point2.x = Math.floor(point2.x)+0.5;
+				point2.y = Math.floor(point2.y)+0.5;
+				point3.x = Math.floor(point3.x)+0.5;
+				point3.y = Math.floor(point3.y)+0.5;
+			}
+			render();
 		}
 
 		pixels.addEventListener("mousemove", function(e) {
@@ -295,7 +365,7 @@ slide1obj.init = (function(event) {
 				point3.y = gridspace.y+point3.offy;
 			}
 
-			if (slide1obj.slideprogress < 2) {
+			if (slide1obj.slideprogress < 3) {
 				point1.x = Math.min(Math.max(Math.floor(point1.x)+0.5,0.5),24.5);
 				point1.y = Math.min(Math.max(Math.floor(point1.y)+0.5,0.5),24.5);
 				point2.x = Math.min(Math.max(Math.floor(point2.x)+0.5,0.5),24.5);
@@ -314,15 +384,15 @@ slide1obj.init = (function(event) {
 			point1.hover = false;
 			point2.hover = false;
 			point3.hover = false;
-			if ((gridspace.x-point1.x)*(gridspace.x-point1.x) + (gridspace.y-point1.y)*(gridspace.y-point1.y) < 0.25) {
+			if ((gridspace.x-point1.x)*(gridspace.x-point1.x) + (gridspace.y-point1.y)*(gridspace.y-point1.y) < 0.25 && slide1obj.slideprogress > 0 && slide1obj.slideprogress != 3 && slide1obj.slideprogress != 4) {
 				point1.hover = true;
 				point1.offx = point1.x - gridspace.x;
 				point1.offy = point1.y - gridspace.y;
-			} else if ((gridspace.x-point2.x)*(gridspace.x-point2.x) + (gridspace.y-point2.y)*(gridspace.y-point2.y) < 0.25) {
+			} else if ((gridspace.x-point2.x)*(gridspace.x-point2.x) + (gridspace.y-point2.y)*(gridspace.y-point2.y) < 0.25 && slide1obj.slideprogress > 0 && slide1obj.slideprogress != 3 && slide1obj.slideprogress != 4) {
 				point2.hover = true;
 				point2.offx = point2.x - gridspace.x;
 				point2.offy = point2.y - gridspace.y;
-			} else if ((gridspace.x-point3.x)*(gridspace.x-point3.x) + (gridspace.y-point3.y)*(gridspace.y-point3.y) < 0.25 && slide1obj.slideprogress > 1) {
+			} else if ((gridspace.x-point3.x)*(gridspace.x-point3.x) + (gridspace.y-point3.y)*(gridspace.y-point3.y) < 0.25 && slide1obj.slideprogress > 1 && slide1obj.slideprogress != 3 && slide1obj.slideprogress != 4) {
 				point3.hover = true;
 				point3.offx = point3.x - gridspace.x;
 				point3.offy = point3.y - gridspace.y;
@@ -363,6 +433,7 @@ slide1obj.init = (function(event) {
 
 		render();
 
+		var spinid;
 		slide1obj.next = function() {
 			if (slide1obj.slideprogress == 5) {
 				return true;
@@ -371,6 +442,37 @@ slide1obj.init = (function(event) {
 				switch (slide1obj.slideprogress) {
 					case 1:
 						document.getElementById("s1t2").className = "leaf-right shown";
+						document.getElementById("s1t1").className = "leaf-left hidden";
+						break;
+					case 2:
+						document.getElementById("s1t2").className = "leaf-right hidden";
+						document.getElementById("s1t3").className = "leaf-left shown";
+						break;
+					case 3:
+						document.getElementById("s1t4").className = "leaf-right shown";
+						document.getElementById("s1t3").className = "leaf-left hidden";
+						point1Spin.x = point1.x;
+						point1Spin.y = point1.y;
+						point2Spin.x = point2.x;
+						point2Spin.y = point2.y;
+						point3Spin.x = point3.x;
+						point3Spin.y = point3.y;
+						spinid = setInterval(spin, 16);
+						break;
+					case 4:
+						document.getElementById("s1t5").className = "leaf-left shown";
+						document.getElementById("s1t4").className = "leaf-right hidden";
+						break;
+					case 5:
+						document.getElementById("s1t5").className = "leaf-left hidden";
+						document.getElementById("s1t6").className = "leaf-right shown";
+						clearInterval(spinid);
+						point1.x = Math.min(Math.max(Math.floor(point1.x)+0.5,0.5),24.5);
+						point1.y = Math.min(Math.max(Math.floor(point1.y)+0.5,0.5),24.5);
+						point2.x = Math.min(Math.max(Math.floor(point2.x)+0.5,0.5),24.5);
+						point2.y = Math.min(Math.max(Math.floor(point2.y)+0.5,0.5),24.5);
+						point3.x = Math.min(Math.max(Math.floor(point3.x)+0.5,0.5),24.5);
+						point3.y = Math.min(Math.max(Math.floor(point3.y)+0.5,0.5),24.5);
 						break;
 				}
 				render();
@@ -385,6 +487,37 @@ slide1obj.init = (function(event) {
 				switch (slide1obj.slideprogress) {
 					case 0:
 						document.getElementById("s1t2").className = "leaf-right hidden";
+						document.getElementById("s1t1").className = "leaf-left shown";
+						break;
+					case 1:
+						document.getElementById("s1t2").className = "leaf-right shown";
+						document.getElementById("s1t3").className = "leaf-left hidden";
+						break;
+					case 2:
+						document.getElementById("s1t4").className = "leaf-right hidden";
+						document.getElementById("s1t3").className = "leaf-left shown";
+						point1.x = Math.min(Math.max(Math.floor(point1.x)+0.5,0.5),24.5);
+						point1.y = Math.min(Math.max(Math.floor(point1.y)+0.5,0.5),24.5);
+						point2.x = Math.min(Math.max(Math.floor(point2.x)+0.5,0.5),24.5);
+						point2.y = Math.min(Math.max(Math.floor(point2.y)+0.5,0.5),24.5);
+						point3.x = Math.min(Math.max(Math.floor(point3.x)+0.5,0.5),24.5);
+						point3.y = Math.min(Math.max(Math.floor(point3.y)+0.5,0.5),24.5);
+						clearInterval(spinid);
+						break;
+					case 3:
+						document.getElementById("s1t5").className = "leaf-left hidden";
+						document.getElementById("s1t4").className = "leaf-right shown";
+						break;
+					case 4:
+						document.getElementById("s1t5").className = "leaf-left shown";
+						document.getElementById("s1t6").className = "leaf-right hidden";
+						point1Spin.x = point1.x;
+						point1Spin.y = point1.y;
+						point2Spin.x = point2.x;
+						point2Spin.y = point2.y;
+						point3Spin.x = point3.x;
+						point3Spin.y = point3.y;
+						spinid = setInterval(spin, 16);
 						break;
 				}
 				render();

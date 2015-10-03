@@ -25,11 +25,15 @@
 	transform: translate(-50%, -50%);
 }
 
+#coordnates {
+	position: absolute;
+}
+
 div.leaf-left {
 	position: absolute;
 	right: 100%;
 	width: 40%;
-	top: 40%;
+	top: 45%;
 	font-size: 1.333333vw;
 	transform: translate(-16px, -50%);
 	transition: opacity 1s;
@@ -47,10 +51,10 @@ div.leaf-right {
 	position: absolute;
 	left: 100%;
 	width: 40%;
-	top: 40%;
+	top: 45%;
 	font-size: 1.333333vw;
 	transform: translate(16px, -50%);
-	transition: opacity 1s;
+	transition: opacity 0.5s;
 }
 
 div.leaf-right.shown {
