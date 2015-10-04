@@ -16,6 +16,8 @@ slide1obj.init = (function(event) {
 	if (!gl) {
 		pixels.parentNode.appendChild(document.getElementById("webgl-unsupported").cloneNode(true));
 		pixels.remove();
+		slide1obj.next = function() {return true;};
+		slide1obj.prev = function() {return true;};
 	} else {
 		// Texture shader
 		var vs = gl.createShader(gl.VERTEX_SHADER);
@@ -94,7 +96,7 @@ slide1obj.init = (function(event) {
 		}
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ary), gl.STATIC_DRAW);
 
-		point1 = {x:4.5,y:19.5,hover:false,drag:false,offx:0,offy:0};
+		var point1 = {x:4.5,y:19.5,hover:false,drag:false,offx:0,offy:0};
 		var point2 = {x:16.5,y:6.5,hover:false,drag:false,offx:0,offy:0};
 		var point3 = {x:20.5,y:16.5,hover:false,drag:false,offx:0,offy:0};
 

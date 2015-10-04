@@ -38,7 +38,7 @@
 			<a id="startbutton" href="javascript:void(0);">Start</a>
 		</div>
 		<div class="slide hidden" id="2">
-			<div id="s1center" class="center">
+			<div class="center">
 				<div id="coordinates"></div>
 				<div class="leaf-left shown" id="s1t1">
 					Your screen is a grid of pixels, and so all computer graphics must be put of a grid of pixels somehow.
@@ -49,7 +49,8 @@
 					<br><br>Drawing lines is simple, you just start at the beginning of the line and step along it until you reach the end of the line.
 				</div>
 				<div class="leaf-left hidden" id="s1t3">
-					Drawing filled shapes, such as triangles, is a little bit harder, but is still relatively simple to do quickly and efficently.
+					Drawing filled shapes, always triangles, is a little bit harder, but is still relatively simple to do quickly and efficently.
+					<br><br>The only filled shapes we draw are triangles because all other shapes can be made (or approximated) with triangles, and it simplifies things a ton.
 				</div>
 				<div class="leaf-right hidden" id="s1t4">
 					We can rotate these around the center of the screen with a little bit of math and...<br>Uh oh! That rotation is really choppy and not very smooth. Rather ugly.
@@ -72,7 +73,13 @@
 		</div>
 		<div class="slide hidden" id="3">
 			<div class="center">
-				That's all, folks!
+				<div class="leaf-left shown" id="s2t1">
+					Now that we know how graphics end up on the screen, it's time for something more interesting: <span class="threed">3D </span>
+					<br><br>One of the most interesting parts of <span class="thred">3D</span> is the lighting, so we'll focus on that.
+				</div>
+				<canvas id="s2canvas">
+					Your browser does not support HTML5. Please use a more modern browser, such as Firefox or Chorome.
+				</canvas>
 			</div>
 			<script src="slide2.js"></script>
 		</div>
