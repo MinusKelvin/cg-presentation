@@ -32,16 +32,12 @@
 	background-color: rgba(255,255,255,0.5);
 }
 
-.threed {
-	display: inline-block;
-	transform: perspective(50px) rotateY(30deg);
-}
-.thred {
-	display: inline-block;
-	transform: perspective(50px) rotateX(35deg);
+#time {
+	position: absolute;
+	bottom: 100%;
 }
 
-div.leaf-left {
+.leaf-left {
 	position: absolute;
 	right: 100%;
 	width: 40%;
@@ -51,15 +47,15 @@ div.leaf-left {
 	transition: opacity 1s;
 }
 
-div.leaf-left.shown {
+.leaf-left.shown, .leaf-right.shown, .bit.shown {
 	opacity: 1;
 }
 
-div.leaf-left.hidden {
+.leaf-left.hidden, .leaf-right.hidden, .bit.hidden {
 	opacity: 0;
 }
 
-div.leaf-right {
+.leaf-right {
 	position: absolute;
 	left: 100%;
 	width: 40%;
@@ -69,12 +65,19 @@ div.leaf-right {
 	transition: opacity 0.5s;
 }
 
-div.leaf-right.shown {
-	opacity: 1;
+.bit {
+	transition: opacity 0.5s;
 }
 
-div.leaf-right.hidden {
-	opacity: 0;
+#ldir {
+	position: absolute;
+	top: 100%;
+	width: 100%;
+}
+
+#timescale {
+	position: absolute;
+	width: 100%;
 }
 
 div.slide.shown {

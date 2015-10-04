@@ -54,7 +54,7 @@
 				</div>
 				<div class="leaf-right hidden" id="s1t4">
 					We can rotate these around the center of the screen with a little bit of math and...<br>Uh oh! That rotation is really choppy and not very smooth. Rather ugly.
-					<br><br>The problem here is that we're losing information about the exact location of the triangle's corners.
+					<br><br>The problem here is that since we're using whole number coordinates, we're losing information about the exact location of the triangle's corners.
 				</div>
 				<div class="leaf-left hidden" id="s1t5">
 					Ah! Much better. By changing our coordinate system from using whole numbers to using decimals, we can target parts of pixels instead of just the centers of them.
@@ -73,15 +73,44 @@
 		</div>
 		<div class="slide hidden" id="3">
 			<div class="center">
+				<div id="time"></div>
+				<input type="range" id="ldir" max="3.14" min="-3.14" step="0.01" defaultValue="1.57" style="display:none;">
+				<input type="range" id="timescale" max="16" min="-16" step="0.1" defaultValue="0" style="display:none;">
 				<div class="leaf-left shown" id="s2t1">
-					Now that we know how graphics end up on the screen, it's time for something more interesting: <span class="threed">3D </span>
-					<br><br>One of the most interesting parts of <span class="thred">3D</span> is the lighting, so we'll focus on that.
+					Now that we know how graphics end up on the screen, it's time for something more interesting: 3D
+					<br><br>This surface is generated from several sine waves based on each points' position and time. It's made of 20,000 triangles.
 				</div>
-				<canvas id="s2canvas">
+				<div class="leaf-right hidden" id="s2t2">
+					You can see the current time value at the top. It's not changing, so the surface is not changing.
+					<br><br><span id="s2t3" class="bit hidden">Now that time is changing, the surface is changing. You can use the above slider to change the timescale.</span>
+				</div>
+				<div class="leaf-left hidden" id="s2t4">
+					As the surface changes, the lighting on the surface also changes. Lighting is quite interesting.
+					<br><br>It requires two things at a minimum: a light direction, and a surface normal.
+				</div>
+				<div class="leaf-right hidden" id="s2t5">
+					A surface normal is the direction that sticks straight of out a surface, or in other words the direction at a right angle to a surface.
+					<br><br>I'm showing those as blue lines here.
+				</div>
+				<div class="leaf-left hidden" id="s2t6">
+					The light direction is the direction from the light source, which in this case is the same for every point to make it look like sunlight.
+					<br><br>You can use the slider at the bottom to change the light's direction.
+				</div>
+				<div class="leaf-right hidden" id="s2t7">
+					Once we have the surface normal and the light direction, we can easily calculate how bright the surface should be.
+					<br><br>Oh, and all that lighting stuff is run per-pixel, which works out to your computer being really, really fast.
+				</div>
+				<canvas id="s2canvas" style="cursor:grab;">
 					Your browser does not support HTML5. Please use a more modern browser, such as Firefox or Chorome.
 				</canvas>
 			</div>
 			<script src="slide2.js"></script>
+		</div>
+		<div class="slide hidden" id="4">
+			<div class="center">
+				That's all, folks!
+			</div>
+			<script>slideObjects.push({next:function(){return true},prev:function(){return true},init:function(){}})</script>
 		</div>
 		<a id="left" class="slidenav" href="javascript:void(0);">&lt;</a>
 		<a id="right" class="slidenav" href="javascript:void(0);">&gt;</a>

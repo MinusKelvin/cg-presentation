@@ -479,6 +479,12 @@ slide1obj.init = (function(event) {
 					case 5:
 						document.getElementById("s1t5").className = "leaf-left hidden";
 						document.getElementById("s1t6").className = "leaf-right shown";
+						point1.x = Math.min(Math.max(point1.x,0),25);
+						point1.y = Math.min(Math.max(point1.y,0),25);
+						point2.x = Math.min(Math.max(point2.x,0),25);
+						point2.y = Math.min(Math.max(point2.y,0),25);
+						point3.x = Math.min(Math.max(point3.x,0),25);
+						point3.y = Math.min(Math.max(point3.y,0),25);
 						clearInterval(spinid);
 						break;
 				}

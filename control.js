@@ -28,6 +28,8 @@ document.getElementById("left").addEventListener("click", function(event) {
 		current -= 1;
 		slides[current].className = "slide shown";
 		slides[current+1].className = "slide hidden";
+		if (slideObjects[current].start)
+			slideObjects[current].start();
 	}
 	hidebar();
 });
@@ -36,6 +38,8 @@ document.getElementById("right").addEventListener("click", function(event) {
 		current += 1;
 		slides[current].className = "slide shown";
 		slides[current-1].className = "slide done";
+		if (slideObjects[current].start)
+			slideObjects[current].start();
 	}
 	hidebar();
 });
