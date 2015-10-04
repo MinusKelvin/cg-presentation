@@ -352,8 +352,8 @@ slide1obj.init = (function(event) {
 
 		pixels.addEventListener("mousemove", function(e) {
 			var gridspace = {
-				x: e.layerX/(size/25),
-				y: (pixels.height-e.layerY)/(size/25)
+				x: e.offsetX/(size/25),
+				y: (pixels.height-e.offsetY)/(size/25)
 			};
 			if (point1.drag) {
 				point1.x = gridspace.x+point1.offx;
