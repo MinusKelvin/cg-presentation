@@ -99,34 +99,58 @@ div.slide {
 	transition: left 1s;
 }
 
-a.slidenav {
+a.arrowbox {
+	display: block;
 	position: absolute;
 	text-decoration: none;
+	background-color: #bbb;
+	border: 4px solid #bbb;
+	width: 3vh;
+	height: 3vh;
+	border-radius: 8px;
+}
+
+a.arrowbox:focus {
+	outline: none;
+}
+
+.arrow {
+	position: absolute;
+	width: 70%;
+	height: 30%;
+	background-color: #fff;
+	border-radius: 30%;
+}
+
+.arrow.one {
+	top: 20%;
+	right: 12%;
+	transform: rotate(45deg);
+}
+
+.arrow.two {
+	bottom: 20%;
+	right: 12%;
+	transform: rotate(-45deg);
 }
 
 a#togglebar {
-	position: absolute;
 	top: 0;
 	left: 32px;
-	transition: top 0.5s;
+	transition: top 0.5s, transform 0.5s;
 	text-decoration: none;
-}
-
-a#togglebar::before {
-	content: "V";
+	transform: rotate(90deg);
 }
 
 a#togglebar.shown {
 	top: 70px;
-}
-
-a#togglebar.shown::before {
-	content: "^";
+	transform: rotate(-90deg);
 }
 
 a#left {
 	bottom: 0;
 	right: 65%;
+	transform: rotate(180deg);
 }
 
 a#right {

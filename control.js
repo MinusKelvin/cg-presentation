@@ -12,12 +12,12 @@ var current = 0;
 var shown = true;
 function hidebar() {
 	document.getElementById("header").className = "hidden";
-	document.getElementById("togglebar").className = "";
+	document.getElementById("togglebar").className = "arrowbox";
 	shown = false;
 }
 function showbar() {
 	document.getElementById("header").className = "";
-	document.getElementById("togglebar").className = "shown";
+	document.getElementById("togglebar").className = "arrowbox shown";
 	shown = true;
 }
 document.getElementById("startbutton").addEventListener("click", function(event) {
