@@ -389,8 +389,8 @@ slide1obj.init = (function(event) {
 			} else {
 				coords.textContent = "(x: " + Number(gridspace.x).toFixed(2) + ", y: " + Number(gridspace.y).toFixed(2) + ")";
 			}
-			coords.style.top = e.layerY + "px";
-			coords.style.left = e.layerX + "px";
+			coords.style.top = e.offsetY + "px";
+			coords.style.left = e.offsetX + "px";
 
 			point1.hover = false;
 			point2.hover = false;
