@@ -270,6 +270,7 @@ slide2obj.init = function() {
             }
         }
 
+        var last = 0;
 		window.addEventListener("resize", function(e) {
 			size = Math.floor(window.innerHeight * 0.9);
 			canvas.width = size;
@@ -279,14 +280,16 @@ slide2obj.init = function() {
         var dragging = false;
         window.addEventListener("mousemove", function(e) {
             if (dragging) {
-                vel -= e.movementX/2000;
+                vel -= (e.clientX-last)/2000;
+                last = e.clientX;
             }
         });
 
-        canvas.addEventListener("mousedown", function() {
+        canvas.addEventListener("mousedown", function(e) {
             dragging = true;
             document.body.style.cursor = "grabbing";
             canvas.style.cursor = "";
+            last = e.clientX;
         });
 
         window.addEventListener("mouseup", function() {
