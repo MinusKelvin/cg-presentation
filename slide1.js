@@ -412,9 +412,9 @@ slide1obj.init = (function(event) {
 			point2.hover = point2.hover || point2.drag;
 			point3.hover = point3.hover || point3.drag;
 
-			if (point1.hover || point2.hover || point3.hover) pixels.style.cursor = "grab";
-			else pixels.style.cursor = "default";
-			if (point1.drag || point2.drag || point3.drag) pixels.style.cursor = "grabbing";
+			if (point1.hover || point2.hover || point3.hover) pixels.className = "grab";
+			else pixels.className = "";
+			if (point1.drag || point2.drag || point3.drag) pixels.className = "grabbing";
 			render();
 		});
 
@@ -422,7 +422,7 @@ slide1obj.init = (function(event) {
 			point1.drag = point1.hover;
 			point2.drag = point2.hover;
 			point3.drag = point3.hover;
-			if (point1.drag || point2.drag || point3.drag) pixels.style.cursor = "grabbing";
+			if (point1.drag || point2.drag || point3.drag) pixels.className = "grabbing";
 			render();
 		});
 
@@ -432,8 +432,8 @@ slide1obj.init = (function(event) {
 			point1.drag = false;
 			point2.drag = false;
 			point3.drag = false;
-			if (point1.hover || point2.hover || point3.hover) pixels.style.cursor = "grab";
-			else pixels.style.cursor = "default";
+			if (point1.hover || point2.hover || point3.hover) pixels.className = "grab";
+			else pixels.className = "";
 			render();
 		});
 
@@ -539,5 +539,4 @@ slide1obj.init = (function(event) {
 		}
 	}
 });
-// setTimeout(function(){document.getElementById("right").click()},0);
 slideObjects.push(slide1obj);

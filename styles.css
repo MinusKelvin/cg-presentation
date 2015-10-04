@@ -18,6 +18,18 @@
 	transform: translate(-50%, -50%) scale(1.15);
 }
 
+.grab {
+	cursor: grab;
+	cursor: -webkit-grab;
+	cursor: -mox-grab;
+}
+
+.grabbing {
+	cursor: grabbing;
+	cursor: -webkit-grabbing;
+	cursor: -mox-grabbing;
+}
+
 .center {
 	position: absolute;
 	top: 50%;

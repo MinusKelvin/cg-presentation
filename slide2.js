@@ -287,15 +287,15 @@ slide2obj.init = function() {
 
         canvas.addEventListener("mousedown", function(e) {
             dragging = true;
-            document.body.style.cursor = "grabbing";
-            canvas.style.cursor = "";
+            document.body.className = "grabbing";
+            canvas.className = "";
             last = e.clientX;
         });
 
         window.addEventListener("mouseup", function() {
             dragging = false;
-            document.body.style.cursor = "";
-            canvas.style.cursor = "grab";
+            document.body.className = "";
+            canvas.className = "grab";
         });
 
         var rendering;
